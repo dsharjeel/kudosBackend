@@ -8,7 +8,7 @@ const userSchema = new Schema(
             type: String,
             required: true,
             unique: true,
-            lowsercase: true,
+            lowercase: true,
             trim: true,
             index: true,
         },
@@ -16,7 +16,7 @@ const userSchema = new Schema(
             type: String,
             required: true,
             unique: true,
-            lowsercase: true,
+            lowercase: true,
             trim: true,
         },
         fullname: {
@@ -31,6 +31,7 @@ const userSchema = new Schema(
         },
         coverimage: {
             type: String,
+            default: null,
         },
         watchlist: [
             {
@@ -51,7 +52,7 @@ const userSchema = new Schema(
 
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
-        next();
+        return next();
     }
     this.password = await bcrypt.hash(this.password, 10);
     next();
@@ -62,7 +63,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 userSchema.methods.generateAccessToken = function () {
-    jwt.sign(
+    return jwt.sign(
         {
             _id: this._id,
             username: this.username,
@@ -76,7 +77,7 @@ userSchema.methods.generateAccessToken = function () {
     );
 };
 userSchema.methods.generateRefreshToken = function () {
-    jwt.sign(
+    return jwt.sign(
         {
             _id: this._id,
         },

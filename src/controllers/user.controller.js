@@ -5,18 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 
 const registerUser = aysncHandler(async (req, res) => {
-    // get user data from request body or frontend
-    // validate user data - not empty, valid email, etc.
-    // check if user already exists
-    // check for images, check for avatar
-    // upload images to cloudinary
-    // create user object - create entry in database
-    // remove password and refresh token from response
-    // check for user creation
-    // return user object in response
-
     const { fullname, email, username, password } = req.body;
-    console.log("User data: ", email);
     if (
         [fullname, email, username, password].some(
             (field) => field?.trim() === ""
@@ -25,14 +14,14 @@ const registerUser = aysncHandler(async (req, res) => {
         throw new ApiError(400, "Please fill in all fields");
     }
 
-    const existedUser = User.findOne({ $or: [{ username }, { email }] });
+    const existedUser = await User.findOne({ $or: [{ username }, { email }] });
 
     if (existedUser) {
         throw new ApiError(409, "User already exists");
     }
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverimage[0]?.path;
+    const avatarLocalPath = req.files?.avatar?.[0]?.path;
+    const coverImageLocalPath = req.files?.coverimage?.[0]?.path;
 
     if (!avatarLocalPath) {
         throw new ApiError(400, "Please upload an avatar");
@@ -46,10 +35,14 @@ const registerUser = aysncHandler(async (req, res) => {
         throw new ApiError(500, "Error uploading avatar");
     }
 
+    if (coverImageLocalPath && !coverImageOnCloudinary) {
+        throw new ApiError(500, "Error uploading cover image");
+    }
+
     const createUser = await User.create({
         fullname,
-        avatarOnCloudinary: avatarOnCloudinary.url,
-        coverimage: coverImageOnCloudinary?.url,
+        avatar: avatarOnCloudinary.secure_url,
+        coverimage: coverImageOnCloudinary?.secure_url,
         email,
         username: username.toLowerCase(),
         password,
@@ -61,7 +54,7 @@ const registerUser = aysncHandler(async (req, res) => {
 
     if (!createdUser) {
         throw new ApiError(500, "Error creating user");
-    }
+    };
 
     return res
         .status(201)
