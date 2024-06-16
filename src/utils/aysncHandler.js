@@ -12,9 +12,9 @@ const aysncHandler = (fn) => async (req, res, next) => {
 
 // Using promise to handle async functions
 // const aysncHandler = (requestHandler) => {
-//   (req, res, next) => {
+//   return (req, res, next) => {
 //     Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err));
 //   };
 // };
 
-export default aysncHandler;
+export { aysncHandler };
