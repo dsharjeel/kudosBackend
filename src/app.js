@@ -1,26 +1,29 @@
-import express from "express";
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import { JSON_LIMIT } from "./constants.js";
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+
+
+dotenv.config({path: "./.env"});
 
 const app = express();
 
-app.use(
-    cors({
-        origin: process.env.CLIENT_URL,
-        credentials: true,
-    })
-);
+app.use(cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true
+}));
 
-app.use(express.json({ limit: JSON_LIMIT }));
-app.use(express.urlencoded({ extended: true, limit: JSON_LIMIT }));
-app.use(express.static("public"));
-app.use(cookieParser());
+app.use(express.json({ limit: '16kb' }));
+app.use(express.urlencoded({ extended: true, limit: '16kb' }));
+app.use(express.static('public/temp'));
+app.use(cookieParser)
 
-// Routes import
-import userRouter from "./routes/user.routes.js";
 
-// Routes declaration
-app.use("/api/v1/users", userRouter);
+// routes
+import healthcheckRouter from './routes/healthcheck.route.js';
+
+app.use('/api/v1/healthcheck', healthcheckRouter)
+
+app.use('api/v1/user')
 
 export default app;
