@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import bycrypt from "bcryptjs";
+import bycrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const userSchema = new Schema(
@@ -18,12 +18,12 @@ const userSchema = new Schema(
             lowercase: true,
             trim: true,
         },
-        fullName: { type: String, required: true },
+        fullName: { type: String, required: true, trim: true },
         avatar: { type: String, required: true },
-        coverImage: { type: String, required: true },
+        coverImage: { type: String },
         watchHistory: [{ type: Schema.Types.ObjectId, ref: "Video" }],
         password: { type: String, required: true },
-        refreshToken: { type: String, required: true },
+        refreshToken: { type: String },
     },
     { timestamps: true }
 );
@@ -34,7 +34,7 @@ userSchema.pre("save", async function (next) {
     next();
 });
 
-userSchema.methods.isPasswordMatch = async function (password) {
+userSchema.methods.isPasswordCorrect = async function (password) {
     return await bycrypt.compare(password, this.password);
 };
 

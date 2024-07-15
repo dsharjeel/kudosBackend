@@ -16,14 +16,15 @@ app.use(cors({
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(express.static('public/temp'));
-app.use(cookieParser)
+app.use(cookieParser());
 
 
 // routes
 import healthcheckRouter from './routes/healthcheck.route.js';
+import userRouter from './routes/user.route.js';
 
-app.use('/api/v1/healthcheck', healthcheckRouter)
+app.use('/api/v1', healthcheckRouter)
+app.use('/api/v1/user', userRouter);
 
-app.use('api/v1/user')
 
 export default app;
