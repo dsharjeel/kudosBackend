@@ -23,7 +23,7 @@ const userSchema = new Schema(
         coverImage: { type: String },
         watchHistory: [{ type: Schema.Types.ObjectId, ref: "Video" }],
         password: { type: String, required: true },
-        refreshToken: { type: String },
+        refreshToken: { type: String, unique: true },
     },
     { timestamps: true }
 );
